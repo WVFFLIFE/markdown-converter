@@ -1,26 +1,42 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import marked from 'marked';
+import _ from 'lodash';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default class App extends React.Component {
+
+  state = {
+    text: ''
+  }
+
+  constructor() {
+    super();
+    this.update = _.debounce(this.update, 300);
+  }
+
+  createMarkup() {
+    return {
+      __html: marked(this.state.text)
+    }
+  }
+
+  update(text) {
+    this.setState({
+      text
+    })
+  }
+
+  render() {
+    return (
+      <div style={{'padding': '20px'}}>
+        <h1>Markdown Previewer</h1>
+        <textarea
+          style={{'padding': '5px'}} 
+          placeholder="Type here, stupid..." 
+          cols="50" 
+          rows="10"
+          onChange={(e) => this.update(e.target.value)}></textarea>
+        <div dangerouslySetInnerHTML={this.createMarkup()}></div>
+      </div>
+    )
+  }
 }
-
-export default App;
